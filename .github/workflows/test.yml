@@ -1,7 +1,7 @@
 name: daily-push-test
 on:
   schedule:
-    - cron: '12 * * * *'
+    - cron: '15 * * * *'
       timezone: "Asia/Shanghai"
   workflow_dispatch:
       
