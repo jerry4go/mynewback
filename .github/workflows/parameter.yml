@@ -1,0 +1,7 @@
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: '环境'
+        required: true
+        default: 'dev'
