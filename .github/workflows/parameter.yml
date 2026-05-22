@@ -8,10 +8,9 @@ on:
         default: 'dev'
         
 jobs:
-  run-task:
+  print-env:
     runs-on: ubuntu-latest
     steps:
-      - name: Check Time
+      - name: Print the input env
         run: |
-          echo "System Time (UTC): $(date -u)"
-          echo "Beijing Time (UTC+8): $(TZ='Asia/Shanghai' date)"
+          echo "你输入的环境是: ${{ github.event.inputs.env }}"
