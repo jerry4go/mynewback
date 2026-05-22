@@ -1,8 +1,7 @@
 name: daily-push
 on:
   schedule:
-    - cron: '53 13 * * *'      # 北京时间每天 13:38 触发
-      timezone: 'Asia/Shanghai'
+    - cron: '58 05 * * *'      
   workflow_dispatch:
 
 jobs:
@@ -10,11 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      # 【新增步骤】修改 Runner 系统时区为北京时间
-      - name: Set Timezone to Asia/Shanghai
-        run: sudo timedatectl set-timezone Asia/Shanghai
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
