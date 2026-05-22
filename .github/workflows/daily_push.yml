@@ -1,7 +1,8 @@
 name: daily-push
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '0 * * * *'      # 每小时的第0分钟执行
+      timezone: 'Asia/Shanghai' # 指定时区为北京时间
   workflow_dispatch:
 
 jobs:
