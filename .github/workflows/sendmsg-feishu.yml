@@ -2,20 +2,20 @@ name: 发消息给飞书
 
 on:
   schedule:
-    - cron: '30 6 * * *'  
+    - cron: '30 6 * * *'
   workflow_dispatch:
-  
+
 jobs:
   run-task:
     runs-on: ubuntu-latest
     steps:
-      - name: 发送飞书通知
-        uses: x-actions/feishu@master
-        with:
-          webhook: ${{ secrets.FEISHU_WEBHOOK }}
-          msg_type: text
-          content: |
-            项目：${{ github.repository }}
-            状态：${{ job.status }}
-            分支：${{ github.ref }}
-            日志：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      - name: 发送飞书消息
+        run: |
+          curl -X POST ${{ secrets.FEISHU_WEBHOOK }} \
+            -H "Content-Type: application/json" \
+            -d '{
+              "msg_type": "text",
+              "content": {
+                "text": "✅ GitHub Action 执行成功\n项目：${{ github.repository }}\n分支：${{ github.ref }}\n日志：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+              }
+            }'
