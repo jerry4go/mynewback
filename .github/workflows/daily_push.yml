@@ -1,33 +1,19 @@
-@ -0,0 +1,32 @@
-name: 每日查询推送TG
-
-# 触发规则：每日北京时间8点执行 + 手动触发
+name: daily-push
 on:
   schedule:
-    - cron: '0 0 * * *'  # UTC0点 = 北京时间8点，按需修改时间
-  workflow_dispatch:     # 支持网页手动点运行测试
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   run-task:
-    runs-on: ubuntu-latest  # 使用GitHub免费云服务器，无需自建机器
+    runs-on: ubuntu-latest
     steps:
-      - name: 拉取仓库代码
-        uses: actions/checkout@v4
-
-      - name: 配置Python环境
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-
-      - name: 安装依赖
-        run: pip install requests
-
-      - name: 执行查询推送脚本
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python daily_query.py
         env:
-          # 读取仓库保存的密钥
-          TG_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
-          TG_CHATID: ${{ secrets.TG_CHAT_ID }}
-        run: |
-          sed -i "s|\"\"|\"$TG_TOKEN\"|" daily_query.py
-          sed -i "s|\"\"|\"$TG_CHATID\"|" daily_query.py
-          python daily_query.py
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
