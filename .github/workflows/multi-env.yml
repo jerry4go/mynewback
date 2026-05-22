@@ -1,0 +1,32 @@
+name: 多环境自动部署
+
+# 3 种触发方式：提交 + 定时 + 手动
+on:
+  push:
+    branches: [ dev, test, main ]  # 只有这 3 个分支会触发
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  # 1. 开发环境（dev 分支）
+  deploy-dev:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/dev'  # 只有 dev 分支才跑
+    steps:
+      - run: echo "✅ 自动部署到【开发环境】"
+      # 这里写你的部署脚本：上传服务器、发布、构建等
+
+  # 2. 测试环境（test 分支）
+  deploy-test:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/test' # 只有 test 分支才跑
+    steps:
+      - run: echo "✅ 自动部署到【测试环境】"
+
+  # 3. 生产环境（main 分支）
+  deploy-prod:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' # 只有 main 分支才跑
+    steps:
+      - run: echo "✅ 自动部署到【生产环境】"
