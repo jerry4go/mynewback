@@ -32,6 +32,7 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
+      - run: pip install requests
       - name: Run daily script
         env:
           LOG_LEVEL: ${{ github.event.inputs.log_level || 'info' }}
