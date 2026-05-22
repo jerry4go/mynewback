@@ -1,39 +1,28 @@
 name: daily-push
-
 on:
   schedule:
-    - cron: '48 13 * * *'      # 北京时间每天 13:38 执行
-      timezone: 'Asia/Shanghai' # 指定时区为北京时间
-  workflow_dispatch:            # 允许手动触发
+    - cron: '53 13 * * *'      # 北京时间每天 13:38 触发
+      timezone: 'Asia/Shanghai'
+  workflow_dispatch:
 
 jobs:
   run-task:
     runs-on: ubuntu-latest
-    
     steps:
-      # 第一步：检查时间（用于验证时区是否生效）
-      - name: Check Current System Time
-        run: |
-          echo "当前系统时间是:"
-          date
-          echo "当前UTC时间是:"
-          date -u
-
-      # 第二步：检出代码
       - uses: actions/checkout@v4
+      
+      # 【新增步骤】修改 Runner 系统时区为北京时间
+      - name: Set Timezone to Asia/Shanghai
+        run: sudo timedatectl set-timezone Asia/Shanghai
 
-      # 第三步：设置 Python 环境
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      # 第四步：安装依赖
-      - name: Install dependencies
-        run: pip install requests
-
-      # 第五步：运行脚本
-      - name: Run daily query
-        run: python daily_query.py
+      
+      - run: pip install requests
+      
+      # 此时运行脚本，脚本内部获取的系统时间将是北京时间
+      - run: python daily_query.py
         env:
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
