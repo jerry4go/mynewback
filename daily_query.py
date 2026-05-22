@@ -2,28 +2,48 @@ import requests
 import os
 import datetime
 
-# 从环境变量读取
+# ---------- 配置 ----------
 TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN")
 TG_CHAT_ID = os.getenv("TG_CHAT_ID")
+SYMBOL = "ETHUSDT"
 
-print("=== 调试信息 ===")
-print(f"Token 是否存在: {TG_BOT_TOKEN is not None}")
-print(f"Chat ID 是否存在: {TG_CHAT_ID is not None}")
+# ---------- 获取 24h 完整行情 ----------
+def get_eth_usdt_24hr():
+    try:
+        url = "https://api.binance.com/api/v3/ticker/24hr"
+        params = {"symbol": SYMBOL}
+        r = requests.get(url, params=params, timeout=10)
+        r.raise_for_status()
+        data = r.json()
 
-def get_data():
-    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    return f"✅ 每日查询任务完成\n时间：{now}\n状态：正常"
+        lastPrice = float(data["lastPrice"])
+        priceChange = float(data["priceChange"])
+        priceChangePercent = float(data["priceChangePercent"])
+        highPrice = float(data["highPrice"])
+        lowPrice = float(data["lowPrice"])
+        volume = float(data["volume"])           # ETH 量
+        quoteVolume = float(data["quoteVolume"]) # USDT 量
 
+        # 涨跌符号
+        sign = "+" if priceChange >= 0 else ""
+
+        text = f"""💰 {SYMBOL} 行情
+现价：${lastPrice:,.2f}
+24h：{sign}{priceChange:,.2f}（{sign}{priceChangePercent:.2f}%）
+最高：${highPrice:,.2f}
+最低：${lowPrice:,.2f}
+成交量：{volume:,.2f} ETH / {quoteVolume:,.2f} USDT"""
+        return text
+    except Exception as e:
+        return f"❌ 获取行情失败：{str(e)}"
+
+# ---------- 发送 Telegram ----------
 def send_tg(text):
-    if not TG_BOT_TOKEN or not TG_CHAT_ID:
-        print("❌ 错误：环境变量缺失！")
-        return
     url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
     payload = {"chat_id": TG_CHAT_ID, "text": text}
-    print(f"请求URL: {url}")
-    print(f"请求参数: {payload}")
-    res = requests.post(url, json=payload)
-    print(f"响应状态码: {res.status_code}")
-    print(f"响应内容: {res.json()}")
+    requests.post(url, json=payload)
 
-send_tg(get_data())
+# ---------- 主程序 ----------
+now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+report = f"📅 时间：{now}\n" + get_eth_usdt_24hr()
+send_tg(report)
