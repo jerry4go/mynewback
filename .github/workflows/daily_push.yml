@@ -1,27 +1,39 @@
 name: daily-push
+
 on:
   schedule:
-    - cron: '38 13 * * *'      # 每小时的第0分钟执行
+    - cron: '48 13 * * *'      # 北京时间每天 13:38 执行
       timezone: 'Asia/Shanghai' # 指定时区为北京时间
-  workflow_dispatch:
+  workflow_dispatch:            # 允许手动触发
 
 jobs:
   run-task:
     runs-on: ubuntu-latest
+    
     steps:
+      # 第一步：检查时间（用于验证时区是否生效）
       - name: Check Current System Time
         run: |
           echo "当前系统时间是:"
           date
           echo "当前UTC时间是:"
           date -u
-    steps:
+
+      # 第二步：检出代码
       - uses: actions/checkout@v4
+
+      # 第三步：设置 Python 环境
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install requests
-      - run: python daily_query.py
+
+      # 第四步：安装依赖
+      - name: Install dependencies
+        run: pip install requests
+
+      # 第五步：运行脚本
+      - name: Run daily query
+        run: python daily_query.py
         env:
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
