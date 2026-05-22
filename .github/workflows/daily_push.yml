@@ -1,7 +1,7 @@
 name: daily-push
 on:
   schedule:
-    - cron: '* */1 * * *'      
+    - cron: '30 6 * * *'      
   workflow_dispatch:           
 
 jobs:
