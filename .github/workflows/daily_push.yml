@@ -1,21 +1,26 @@
 name: daily-push
 on:
   schedule:
-    - cron: '00 06 * * *'      
+    - cron: '05 06 * * *'      
   workflow_dispatch:
 
 jobs:
   run-task:
     runs-on: ubuntu-latest
     steps:
+      - name: Check Current System Time
+        run: |
+          echo "当前系统时间是:"
+          date
+          echo "当前UTC时间是:"
+          date -u
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       
       - run: pip install requests
-      
-      # 此时运行脚本，脚本内部获取的系统时间将是北京时间
+
       - run: python daily_query.py
         env:
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
