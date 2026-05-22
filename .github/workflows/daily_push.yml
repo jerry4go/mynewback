@@ -9,6 +9,13 @@ jobs:
   run-task:
     runs-on: ubuntu-latest
     steps:
+      - name: Check Current System Time
+        run: |
+          echo "当前系统时间是:"
+          date
+          echo "当前UTC时间是:"
+          date -u
+    steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
