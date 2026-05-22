@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Check Time
         run: |
-          echo "System Time (UTC): $(date -u)"
+          echo "System Time (UTC): $(date)"
           echo "Beijing Time (UTC+8): $(TZ='Asia/Shanghai' date)"
       
       - uses: actions/checkout@v4
