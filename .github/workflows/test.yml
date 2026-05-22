@@ -1,0 +1,14 @@
+name: daily-push-test
+on:
+  schedule:
+    - cron: '12 * * * *'
+      timezone: "Asia/Shanghai"
+      
+jobs:
+  run-task:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Time
+        run: |
+          echo "System Time (UTC): $(date)"
+          echo "Beijing Time (UTC+8): $(TZ='Asia/Shanghai' date)"    
