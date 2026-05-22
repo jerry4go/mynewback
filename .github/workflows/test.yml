@@ -3,6 +3,7 @@ on:
   schedule:
     - cron: '12 * * * *'
       timezone: "Asia/Shanghai"
+  workflow_dispatch:
       
 jobs:
   run-task:
