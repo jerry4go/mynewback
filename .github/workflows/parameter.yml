@@ -1,3 +1,4 @@
+name: 带参数触发
 on:
   workflow_dispatch:
     inputs:
