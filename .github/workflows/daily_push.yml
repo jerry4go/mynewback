@@ -2,7 +2,8 @@ name: daily-push
 on:
   schedule:
     - cron: '30 6 * * *'      
-  workflow_dispatch:           
+  workflow_dispatch:
+    types: [cron-job]  
 
 jobs:
   run-task:
