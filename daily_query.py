@@ -1,32 +1,29 @@
 import requests
+import os
 import datetime
 
-# ========== 配置项，后续填仓库密钥 ==========
-TG_BOT_TOKEN = ""
-TG_CHAT_ID = ""
+# 从环境变量读取
+TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN")
+TG_CHAT_ID = os.getenv("TG_CHAT_ID")
 
-def get_query_data():
-    """你的自定义查询任务，替换成自己接口/数据库/爬虫逻辑"""
-    # 示例：获取当日时间+模拟查询数据
+print("=== 调试信息 ===")
+print(f"Token 是否存在: {TG_BOT_TOKEN is not None}")
+print(f"Chat ID 是否存在: {TG_CHAT_ID is not None}")
+
+def get_data():
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    query_result = f"""
-📅 每日查询任务播报
-执行时间：{now}
-查询状态：正常完成
-模拟查询数据：测试任务数据123
-    """
-    return query_result
+    return f"✅ 每日查询任务完成\n时间：{now}\n状态：正常"
 
-def send_telegram(msg):
-    """推送消息到Telegram"""
+def send_tg(text):
+    if not TG_BOT_TOKEN or not TG_CHAT_ID:
+        print("❌ 错误：环境变量缺失！")
+        return
     url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
-    data = {
-        "chat_id": TG_CHAT_ID,
-        "text": msg
-    }
-    res = requests.post(url, data=data)
-    print("推送结果：", res.json())
+    payload = {"chat_id": TG_CHAT_ID, "text": text}
+    print(f"请求URL: {url}")
+    print(f"请求参数: {payload}")
+    res = requests.post(url, json=payload)
+    print(f"响应状态码: {res.status_code}")
+    print(f"响应内容: {res.json()}")
 
-if __name__ == "__main__":
-    result = get_query_data()
-    send_telegram(result)
+send_tg(get_data())
