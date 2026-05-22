@@ -2,48 +2,39 @@ import requests
 import os
 import datetime
 
-# ---------- 配置 ----------
 TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN")
 TG_CHAT_ID = os.getenv("TG_CHAT_ID")
-SYMBOL = "ETHUSDT"
 
-# ---------- 获取 24h 完整行情 ----------
-def get_eth_usdt_24hr():
+# ========== 用不受屏蔽的公开接口 ==========
+def get_eth_price():
     try:
-        url = "https://api.binance.com/api/v3/ticker/24hr"
-        params = {"symbol": SYMBOL}
-        r = requests.get(url, params=params, timeout=10)
-        r.raise_for_status()
-        data = r.json()
+        # 这个接口 GitHub 绝对能访问！
+        url = "https://api.coingecko.com/api/v3/simple/price"
+        params = {
+            "ids": "ethereum",
+            "vs_currencies": "usdt",
+            "include_24hr_change": "true"
+        }
+        res = requests.get(url, params=params, timeout=10)
+        data = res.json()
 
-        lastPrice = float(data["lastPrice"])
-        priceChange = float(data["priceChange"])
-        priceChangePercent = float(data["priceChangePercent"])
-        highPrice = float(data["highPrice"])
-        lowPrice = float(data["lowPrice"])
-        volume = float(data["volume"])           # ETH 量
-        quoteVolume = float(data["quoteVolume"]) # USDT 量
+        price = data["ethereum"]["usdt"]
+        change = data["ethereum"]["usdt_24h_change"]
+        sign = "+" if change >= 0 else ""
 
-        # 涨跌符号
-        sign = "+" if priceChange >= 0 else ""
+        return f"""💰 ETH/USDT 实时行情
+现价：${price:,.2f}
+24h 涨跌：{sign}{change:.2f}%"""
 
-        text = f"""💰 {SYMBOL} 行情
-现价：${lastPrice:,.2f}
-24h：{sign}{priceChange:,.2f}（{sign}{priceChangePercent:.2f}%）
-最高：${highPrice:,.2f}
-最低：${lowPrice:,.2f}
-成交量：{volume:,.2f} ETH / {quoteVolume:,.2f} USDT"""
-        return text
     except Exception as e:
-        return f"❌ 获取行情失败：{str(e)}"
+        return f"❌ 获取失败：{str(e)}\n错误类型：{type(e).__name__}"
 
-# ---------- 发送 Telegram ----------
-def send_tg(text):
+def send_tg(msg):
     url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
-    payload = {"chat_id": TG_CHAT_ID, "text": text}
+    payload = {"chat_id": TG_CHAT_ID, "text": msg}
     requests.post(url, json=payload)
 
-# ---------- 主程序 ----------
+# 执行
 now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-report = f"📅 时间：{now}\n" + get_eth_usdt_24hr()
-send_tg(report)
+content = f"📅 {now}\n{get_eth_price()}"
+send_tg(content)
