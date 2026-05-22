@@ -1,26 +1,24 @@
 name: daily-push
 on:
   schedule:
-    - cron: '05 06 * * *'      
-  workflow_dispatch:
+    - cron: '12 06 * * *'      # UTC 06:05 -> 北京 14:05
+    # 如果想在北京时间 06:05 跑，请改为: '05 22 * * *'
+  workflow_dispatch:            # 允许手动点击运行
 
 jobs:
   run-task:
     runs-on: ubuntu-latest
     steps:
-      - name: Check Current System Time
+      - name: Check Time
         run: |
-          echo "当前系统时间是:"
-          date
-          echo "当前UTC时间是:"
-          date -u
+          echo "System Time (UTC): $(date -u)"
+          echo "Beijing Time (UTC+8): $(TZ='Asia/Shanghai' date)"
+      
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
       - run: pip install requests
-
       - run: python daily_query.py
         env:
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
