@@ -10,13 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 发送飞书通知
-      uses: x-actions/feishu@master
-      if: always()
-      with:
-        webhook: ${{ secrets.FEISHU_WEBHOOK }}
-        msg_type: text
-        content: |
-          项目：${{ github.repository }}
-          状态：${{ job.status }}
-          分支：${{ github.ref }}
-          日志：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        uses: x-actions/feishu@master
+        with:
+          webhook: ${{ secrets.FEISHU_WEBHOOK }}
+          msg_type: text
+          content: |
+            项目：${{ github.repository }}
+            状态：${{ job.status }}
+            分支：${{ github.ref }}
+            日志：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
